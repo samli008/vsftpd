@@ -1,0 +1,40 @@
+yum -y install vsftpd lftp ftp libdb-utils
+
+systemctl enable vsftpd
+
+cat > /etc/vsftpd/vsftpd.conf << EOF
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+xferlog_std_format=YES
+listen=NO
+listen_ipv6=YES
+pam_service_name=vsftpd
+userlist_enable=YES
+tcp_wrappers=YES
+
+chroot_local_user=YES
+chroot_list_enable=YES
+chroot_list_file=/etc/vsftpd/chroot_list
+
+allow_writeable_chroot=YES
+pasv_min_port=30000
+pasv_max_port=30999
+user_config_dir=/etc/vsftpd/users
+EOF
+
+touch /etc/vsftpd/chroot_list
+
+mkdir -p /etc/vsftpd/users
+
+cat > /etc/pam.d/vsftpd << EOF
+auth       required     pam_userdb.so    db=/etc/vsftpd/vuser
+account    required     pam_userdb.so    db=/etc/vsftpd/vuser
+EOF
+
+systemctl start vsftpd
+

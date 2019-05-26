@@ -1,0 +1,48 @@
+#create ftp virtual user
+
+read -p "input system local user:" user
+read -p "input virtual user:" vuser
+read -p "input virtual user-passwd:" passwd
+
+cat >> /etc/vsftpd/vuser << EOF
+$vuser
+$passwd
+EOF
+
+#refresh auth hash database
+
+db_load -T -t hash -f /etc/vsftpd/vuser /etc/vsftpd/vuser.db
+
+#create virtual user permission
+
+read -p "input virtual user permission [r/w]:" wr
+
+case "$wr" in
+w)
+cat > /etc/vsftpd/users/$vuser << EOF
+guest_enable=YES
+guest_username=$user
+anon_world_readable_only=NO
+anon_upload_enable=YES
+anon_mkdir_write_enable=YES
+anon_other_write_enable=YES
+EOF
+;;
+
+r)
+cat > /etc/vsftpd/users/$vuser << EOF
+guest_enable=YES
+guest_username=$user
+anon_world_readable_only=NO
+anon_upload_enable=NO
+anon_mkdir_write_enable=NO
+anon_other_write_enable=NO
+EOF
+;;
+
+*)
+echo "input error!!!"
+esac
+
+echo "user:$vuser and passwd:$passwd for login ftp-server."
+

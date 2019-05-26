@@ -1,0 +1,7 @@
+#create system local user for ftp
+
+read -p "input add system local user:" user
+read -p "input add local user home dir:" dir
+mkdir $dir
+useradd $user -s /sbin/nologin -d $dir
+chown $user $dir
