@@ -16,6 +16,7 @@ listen_ipv6=YES
 pam_service_name=vsftpd
 userlist_enable=YES
 tcp_wrappers=YES
+virtual_use_local_privs=YES
 
 chroot_local_user=YES
 chroot_list_enable=YES
